@@ -8,17 +8,17 @@ const { Z_BEST_SPEED } = require("zlib");
 
 const router = express.Router();
 
-function readDb() {
+readDb = () => {
   return JSON.parse(
     fs.readFileSync(path.join(__dirname, "students.json")).toString()
   );
-}
-function writeDb(newDb) {
+};
+writeDb = (newDb) => {
   return fs.writeFileSync(
     path.join(__dirname, "students.json"),
     JSON.stringify(newDb)
   );
-}
+};
 router.get("/", (req, res) => {
   //   const rawFile = fs
   //     .readFileSync(path.join(__dirname, "students.json"))
@@ -44,7 +44,9 @@ router.post("/", (req, res) => {
     res.status(422).send(); // or 409? 303?
   } else {
     const newEntry = { ...req.body, id: uniqid() };
-    writeDb(db.push(newEntry));
+    db.push(newEntry);
+    writeDb(db);
+    // writeDb(db.push(newEntry));
     res.status(201).send({ id: newEntry.id });
   }
 });
@@ -60,7 +62,8 @@ router.put("/:id", (req, res) => {
   const db = readDb();
   let entry = { ...req.body, id: req.params.id };
   const newDb = db.filter((entry) => entry.id !== req.params.id.toString());
-  writeDb(newDb.push(entry));
+  newDb.push(entry);
+  writeDb(newDb);
   res.send(newDb);
 });
 
