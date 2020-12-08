@@ -1,5 +1,6 @@
 const express = require("express");
 const fs = require("fs");
+const { userInfo } = require("os");
 const path = require("path");
 const { stringify } = require("querystring");
 const uniqid = require("uniqid");
@@ -34,13 +35,16 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", (req, res) => {
+  const db = readDb();
+  const chkEmail =
+    db.filter((entry) => entry.email === req.body.email).length > 0;
   if (Array.isArray(req.body)) {
     res.status(406).send();
+  } else if (chkEmail) {
+    res.status(422).send(); // or 409? 303?
   } else {
-    let newEntry = { ...req.body, id: uniqid() };
-    const db = readDb();
-    db.push(newEntry);
-    fs.writeFileSync(path.join(__dirname, "students.json"), JSON.stringify(db));
+    const newEntry = { ...req.body, id: uniqid() };
+    writeDb(db.push(newEntry));
     res.status(201).send({ id: newEntry.id });
   }
 });
@@ -48,18 +52,22 @@ router.post("/", (req, res) => {
 router.delete("/:id", (req, res) => {
   const db = readDb();
   const newDb = db.filter((entry) => entry.id !== req.params.id.toString());
-  fs.writeFileSync(
-    path.join(__dirname, "students.json"),
-    JSON.stringify(newDb)
-  );
+  writeDb(newDb);
   res.status(204).send();
 });
+
 router.put("/:id", (req, res) => {
   const db = readDb();
   let entry = { ...req.body, id: req.params.id };
   const newDb = db.filter((entry) => entry.id !== req.params.id.toString());
-  newDb.push(entry);
-  writeDb(newDb);
+  writeDb(newDb.push(entry));
   res.send(newDb);
 });
+
+router.post("/checkEmail", (req, res) => {
+  const db = readDb();
+  const entry = db.filter((entry) => entry.email === req.body.email);
+  res.send(entry.length > 0);
+});
+
 module.exports = router;
