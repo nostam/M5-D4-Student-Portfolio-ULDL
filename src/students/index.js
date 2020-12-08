@@ -30,8 +30,8 @@ router.get("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
   const db = readDb();
-  const entry = db.filter((entry) => entry.id === req.params.id.toString());
-  entry.length > 0 ? res.send(entry) : res.status(404).send();
+  const entry = db.find((entry) => entry.id === req.params.id.toString());
+  entry ? res.send(entry) : res.status(404).send();
 });
 
 router.post("/", (req, res) => {
@@ -69,8 +69,8 @@ router.put("/:id", (req, res) => {
 
 router.post("/checkEmail", (req, res) => {
   const db = readDb();
-  const entry = db.filter((entry) => entry.email === req.body.email);
-  res.send(entry.length > 0);
+  const entry = db.find((entry) => entry.email === req.body.email);
+  res.send(entry);
 });
 
 module.exports = router;
