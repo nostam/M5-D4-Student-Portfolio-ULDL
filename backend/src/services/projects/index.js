@@ -4,8 +4,6 @@ const path = require("path");
 const uniqid = require("uniqid");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
-const { userInfo } = require("os");
-const { EINPROGRESS } = require("constants");
 
 readDb = (file) => {
   return JSON.parse(fs.readFileSync(path.join(__dirname, file)).toString());
