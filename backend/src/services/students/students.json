@@ -1,1 +1,9 @@
-[{"name":"Bruce","surname":"Lee","id":"123","email":"brucelee@strive.school","dateOfBirth":"1940-11-27","numberOfProjects":1}]
+[
+  {
+    "name": "Bruce",
+    "surname": "Lee",
+    "id": "123",
+    "email": "brucelee@strive.school",
+    "dateOfBirth": "1940-11-27"
+  }
+]

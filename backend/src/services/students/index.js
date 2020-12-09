@@ -5,15 +5,15 @@ const uniqid = require("uniqid");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
 
-readDb = (file = "students.json") => {
-  const buffer = fs.readFileSync(path.join(__dirname, file));
-  const raw = buffer.toString();
-  return JSON.parse(raw);
-};
-// readDb = (file) => {
-//   return JSON.parse(fs.readFileSync(path.join(__dirname, file)).toString());
+// readDb = (file = "students.json") => {
+//   const buffer = fs.readFileSync(path.join(__dirname, file));
+//   const raw = buffer.toString();
+//   return JSON.parse(raw);
 // };
-writeDb = (newDb, file) => {
+readDb = (file = "students.json") => {
+  return JSON.parse(fs.readFileSync(path.join(__dirname, file)).toString());
+};
+writeDb = (newDb, file = "students.json") => {
   return fs.writeFileSync(path.join(__dirname, file), JSON.stringify(newDb));
 };
 
