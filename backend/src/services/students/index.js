@@ -1,11 +1,7 @@
 const express = require("express");
 const fs = require("fs");
-const { userInfo } = require("os");
 const path = require("path");
-const { stringify } = require("querystring");
 const uniqid = require("uniqid");
-const { Z_BEST_SPEED } = require("zlib");
-
 const router = express.Router();
 
 readDb = () => {
