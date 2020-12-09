@@ -4,21 +4,15 @@ const path = require("path");
 const uniqid = require("uniqid");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
-
-const readDb = (file = "projects.json") => {
-  return JSON.parse(fs.readFileSync(path.join(__dirname, file)).toString());
-};
-writeDb = (newDb, file = "projects.json") => {
-  return fs.writeFileSync(path.join(__dirname, file), JSON.stringify(newDb));
-};
+const services = require("../");
 
 router.get("/", (req, res, next) => {
-  const db = readDb("projects.json");
+  const db = services.readDb(__dirname, "projects.json");
   res.send(db);
 });
 
 router.get("/:id", (req, res, next) => {
-  const db = readDb();
+  const db = services.readDb(__dirname, "projects.json");
   const entry = db.find((entry) => entry.id === req.params.id.toString());
   entry ? res.send(entry) : res.status(404).send();
 });
@@ -45,13 +39,16 @@ router.post(
         // console.log(err.array());
         next(e);
       } else {
-        const db = readDb();
+        const db = services.readDb(__dirname, "projects.json");
         const newEntry = {
           ...req.body,
           id: uniqid(),
           creationDate: new Date(),
         };
-        const students = readDb("../students/students.json");
+        const students = services.readDb(
+          __dirname,
+          "../students/students.json"
+        );
         const student = students.find(
           (student) => student.id === req.body.studentId
         );
@@ -64,11 +61,11 @@ router.post(
           student.numberOfProjects = 1;
         }
         db.push(newEntry);
-        writeDb(db);
+        services.writeDb(db, __dirname, "projects.json()");
         students
           .filter((student) => student !== req.body.studentId)
           .push(student);
-        writeDb(students, "../students/students.json");
+        services.writeDb(students, __dirname, "../students/students.json");
         res.status(201).send({ id: newEntry.id });
       }
     } catch (error) {
@@ -80,9 +77,9 @@ router.post(
 
 router.delete("/:id", (req, res, next) => {
   try {
-    const db = readDb();
+    const db = services.readDb(__dirname, "projects.json");
     const newDb = db.filter((entry) => entry.id !== req.params.id.toString());
-    writeDb(newDb);
+    services.writeDb(newDb, __dirname, "projects.json");
     res.status(204).send();
   } catch (error) {
     next(error);
@@ -110,13 +107,13 @@ router.put(
         e.http.StatusCode = 400;
         next(e);
       } else {
-        const db = readDb();
+        const db = readDb(__dirname, "projects.json");
         let entry = { ...req.body, id: req.params.id };
         const newDb = db.filter(
           (entry) => entry.id !== req.params.id.toString()
         );
         newDb.push(entry);
-        writeDb(newDb);
+        services.writeDb(newDb, __dirname, "projects.json");
         res.send(newDb);
       }
     } catch (error) {

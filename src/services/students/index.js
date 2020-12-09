@@ -4,22 +4,11 @@ const path = require("path");
 const uniqid = require("uniqid");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
-
-// readDb = (file = "students.json") => {
-//   const buffer = fs.readFileSync(path.join(__dirname, file));
-//   const raw = buffer.toString();
-//   return JSON.parse(raw);
-// };
-const readDb2 = (dir = __dirname, file = "students.json") => {
-  return JSON.parse(fs.readFileSync(path.join(dir, file)).toString());
-};
-const writeDb = (newDb, file = "students.json") => {
-  return fs.writeFileSync(path.join(__dirname, file), JSON.stringify(newDb));
-};
+const services = require("../");
 
 router.get("/", (req, res, next) => {
   // const db = services.readDb(__dirname, "students.json");
-  const db = readDb2();
+  const db = services.readDb(__dirname, "students.json");
   console.log(path.join(__dirname, "students.json"));
   res.send(db);
 });
@@ -47,9 +36,8 @@ router.post(
     // body("dateOfBirth").isDate().withMessage("invalid url").exists(),
   ],
   (req, res, next) => {
-    const db = readDb();
-    const chkEmail =
-      db.filter((entry) => entry.email === req.body.email).length > 0;
+    const db = services.readDb(__dirname, "students.json");
+    const chkEmail = db.some((entry) => entry.email === req.body.email);
     if (Array.isArray(req.body)) {
       res.status(406).send();
     } else if (chkEmail) {
@@ -57,31 +45,30 @@ router.post(
     } else {
       const newEntry = { ...req.body, id: uniqid() };
       db.push(newEntry);
-      writeDb(db, "students.json");
-      // writeDb(db.push(newEntry), "students.json");
+      services.writeDb(db, __dirname, "students.json");
       res.status(201).send({ id: newEntry.id });
     }
   }
 );
 
 router.delete("/:id", (req, res, next) => {
-  const db = readDb();
+  const db = services.readDb(__dirname, "students.json");
   const newDb = db.filter((entry) => entry.id !== req.params.id.toString());
-  writeDb(newDb, "students.json");
+  services.writeDb(newDb, __dirname, "students.json");
   res.status(204).send();
 });
 
 router.put("/:id", (req, res, next) => {
-  const db = readDb();
+  const db = services.readDb(__dirname, "students.json");
   let entry = { ...req.body, id: req.params.id };
   const newDb = db.filter((entry) => entry.id !== req.params.id.toString());
   newDb.push(entry);
-  writeDb(newDb, "students.json");
+  services.writeDb(newDb, __dirname, "students.json");
   res.send(newDb);
 });
 
 router.post("/checkEmail", (req, res, next) => {
-  const db = readDb();
+  const db = services.readDb(__dirname, "students.json");
   const entry = db.find((entry) => entry.email === req.body.email);
   res.send(entry);
 });
