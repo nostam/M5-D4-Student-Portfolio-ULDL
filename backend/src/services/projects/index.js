@@ -35,6 +35,7 @@ router.post(
       .exists()
       .withMessage("give repo a name"),
     body("repoURL").isURL().withMessage("invalid url").exists(),
+    body("liveURL").isURL().withMessage("invalid url").exists(),
     body("studentId").isString().isAlphanumeric(),
   ],
   (req, res, next) => {
@@ -42,11 +43,10 @@ router.post(
       const err = validationResult(req);
       if (!err.isEmpty()) {
         const e = new Error();
-        e.message = { errors: err.array() };
-        e.http.StatusCode = 400;
-        console.log(e);
+        e.message = err; // e msg is not sending to the frontend
+        e.httpStatusCode = 400;
+        // console.log(err.array());
         next(e);
-        // return res.status(400).send(e);
       } else {
         const db = readDb("projects.json");
         const newEntry = {
@@ -111,7 +111,6 @@ router.put(
         const e = new Error();
         e.message = { errors: err.array() };
         e.http.StatusCode = 400;
-        console.log(e);
         next(e);
       } else {
         const db = readDb("projects.json");
