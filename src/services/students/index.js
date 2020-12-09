@@ -10,21 +10,22 @@ const { body, validationResult } = require("express-validator");
 //   const raw = buffer.toString();
 //   return JSON.parse(raw);
 // };
-readDb = (file = "students.json") => {
-  return JSON.parse(fs.readFileSync(path.join(__dirname, file)).toString());
+const readDb2 = (dir = __dirname, file = "students.json") => {
+  return JSON.parse(fs.readFileSync(path.join(dir, file)).toString());
 };
-writeDb = (newDb, file = "students.json") => {
+const writeDb = (newDb, file = "students.json") => {
   return fs.writeFileSync(path.join(__dirname, file), JSON.stringify(newDb));
 };
 
 router.get("/", (req, res, next) => {
-  const db = readDb("students.json");
+  // const db = services.readDb(__dirname, "students.json");
+  const db = readDb2();
   console.log(path.join(__dirname, "students.json"));
   res.send(db);
 });
 
 router.get("/:id", (req, res, next) => {
-  const db = readDb();
+  const db = readDb2("students.json");
   const entry = db.find((entry) => entry.id === req.params.id.toString());
   entry ? res.send(entry) : res.status(404).send();
 });

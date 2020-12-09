@@ -5,7 +5,7 @@ const uniqid = require("uniqid");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
 
-readDb = (file = "projects.json") => {
+const readDb = (file = "projects.json") => {
   return JSON.parse(fs.readFileSync(path.join(__dirname, file)).toString());
 };
 writeDb = (newDb, file = "projects.json") => {
@@ -13,7 +13,7 @@ writeDb = (newDb, file = "projects.json") => {
 };
 
 router.get("/", (req, res, next) => {
-  const db = readDb();
+  const db = readDb("projects.json");
   res.send(db);
 });
 

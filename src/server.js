@@ -1,8 +1,8 @@
 const express = require("express");
 const listEndPoints = require("express-list-endpoints");
 const cors = require("cors");
-const students = require("./services/students");
-const projects = require("./services/projects");
+const students = require("./services/students/");
+const projects = require("./services/projects/");
 const server = express();
 const port = process.env.PORT || 3001;
 const problems = require("./services/problems");
