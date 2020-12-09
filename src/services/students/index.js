@@ -19,6 +19,7 @@ writeDb = (newDb, file = "students.json") => {
 
 router.get("/", (req, res, next) => {
   const db = readDb();
+  console.log(path.join(__dirname, "students.json"));
   res.send(db);
 });
 
