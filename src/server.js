@@ -1,5 +1,5 @@
 const express = require("express");
-const listEndpoints = require("express-list-endpoints");
+const listEndPoints = require("express-list-endpoints");
 const cors = require("cors");
 const students = require("./services/students");
 const projects = require("./services/projects");
@@ -28,5 +28,5 @@ server.use(unauthorizedHandler);
 server.use(forbiddenHandler);
 server.use(catchAllHandler);
 
-//console.log(listEndPoints(server));
+console.log(listEndPoints(server));
 server.listen(port, () => console.log("Server is running on port: ", port));

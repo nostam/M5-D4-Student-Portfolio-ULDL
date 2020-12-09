@@ -18,13 +18,13 @@ writeDb = (newDb, file = "students.json") => {
 };
 
 router.get("/", (req, res, next) => {
-  const db = readDb();
+  const db = readDb("students.json");
   console.log(path.join(__dirname, "students.json"));
   res.send(db);
 });
 
 router.get("/:id", (req, res, next) => {
-  const db = readDb("students.json");
+  const db = readDb();
   const entry = db.find((entry) => entry.id === req.params.id.toString());
   entry ? res.send(entry) : res.status(404).send();
 });
@@ -46,7 +46,7 @@ router.post(
     // body("dateOfBirth").isDate().withMessage("invalid url").exists(),
   ],
   (req, res, next) => {
-    const db = readDb("students.json");
+    const db = readDb();
     const chkEmail =
       db.filter((entry) => entry.email === req.body.email).length > 0;
     if (Array.isArray(req.body)) {
@@ -64,7 +64,7 @@ router.post(
 );
 
 router.delete("/:id", (req, res, next) => {
-  const db = readDb("students.json");
+  const db = readDb();
   const newDb = db.filter((entry) => entry.id !== req.params.id.toString());
   writeDb(newDb, "students.json");
   res.status(204).send();
