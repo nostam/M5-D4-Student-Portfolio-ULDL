@@ -12,6 +12,7 @@ const {
   forbiddenHandler,
   catchAllHandler,
 } = require("./errorHandling");
+const { join } = require("path");
 
 const loggerMiddleware = (req, res, next) => {
   console.log(`Logged ${req.url} ${req.method} -- ${new Date()}`);
@@ -20,6 +21,8 @@ const loggerMiddleware = (req, res, next) => {
 server.use(cors());
 server.use(express.json());
 server.use(loggerMiddleware);
+
+server.use(express.static(join(__dirname, "../public")));
 server.use("/students", students);
 server.use("/projects", projects);
 server.use("/problems", problems);

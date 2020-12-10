@@ -3,7 +3,14 @@ const uniqid = require("uniqid");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const { readDB, writeDB } = require("../../lib");
+const { writeFile } = require("fs-extra");
 const { join } = require("path");
+const { pipeline } = require("stream");
+const zlib = require("zlib");
+const multer = require("multer");
+
+const upload = multer({});
+const studentsImgDir = join(__dirname, "../../../public/img/students");
 let d = new Date();
 let year = d.getFullYear();
 let month = d.getMonth();
@@ -79,6 +86,26 @@ router.post(
           res.status(201).send({ id: newEntry.id });
         }
       }
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+);
+router.post(
+  "/:id/uploadPhoto",
+  upload.single("avatar"),
+  async (req, res, next) => {
+    try {
+      const filenameArr = req.file.originalname.split(".");
+      await writeFile(
+        join(
+          studentsImgDir,
+          req.params.id + filenameArr[filenameArr.length - 1]
+        ),
+        req.file.buffer
+      );
+      res.send("ok");
     } catch (error) {
       console.log(error);
       next(error);
