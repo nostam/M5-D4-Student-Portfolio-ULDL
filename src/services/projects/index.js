@@ -3,6 +3,14 @@ const uniqid = require("uniqid");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const { writeDB, readDB } = require("../../lib");
+const { writeFile } = require("fs-extra");
+const { join } = require("path");
+const { pipeline } = require("stream");
+const zlib = require("zlib");
+const multer = require("multer");
+
+const upload = multer({});
+const projectsImgDir = join(__dirname, "../../../public/img/projects");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -152,6 +160,37 @@ router.post(
         //   .push(project);
         // await writeDB(projects, __dirname, "projects.json");
         res.status(201).send({ id: newEntry.id });
+      }
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+);
+
+router.post(
+  "/:id/uploadPhoto",
+  upload.single("image"),
+  async (req, res, next) => {
+    try {
+      const filenameArr = req.file.originalname.split(".");
+      const filename =
+        req.params.id + "." + filenameArr[filenameArr.length - 1];
+      await writeFile(join(projectsImgDir, filename), req.file.buffer);
+      const db = await readDB(__dirname, "projects.json");
+      const project = db.find((entry) => (entry.id = req.params.id));
+      if (Object.keys(project).length > 0) {
+        project = {
+          ...project,
+          image: join(projectsImgDir, filename).toString(),
+        };
+        const newDB = db
+          .filter((entry !== entry.id) !== req.params.id)
+          .push(project);
+        writeDB(newDB, __dirname, "students.json");
+        res.status(201).send();
+      } else {
+        throw new Error("invalid project ID");
       }
     } catch (error) {
       console.log(error);

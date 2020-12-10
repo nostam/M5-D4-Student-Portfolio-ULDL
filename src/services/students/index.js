@@ -92,20 +92,32 @@ router.post(
     }
   }
 );
+
 router.post(
   "/:id/uploadPhoto",
-  upload.single("avatar"),
+  upload.single("image"),
   async (req, res, next) => {
     try {
       const filenameArr = req.file.originalname.split(".");
-      await writeFile(
-        join(
-          studentsImgDir,
-          req.params.id + filenameArr[filenameArr.length - 1]
-        ),
-        req.file.buffer
-      );
-      res.send("ok");
+      const filename =
+        req.params.id + "." + filenameArr[filenameArr.length - 1];
+      await writeFile(join(studentsImgDir, filename), req.file.buffer);
+      const db = await readDB(__dirname, "students.json");
+      const student = db.find((entry) => (entry.id = req.params.id));
+      // console.log(express.static(__dirname, filename));
+      if (Object.keys(student).length > 0) {
+        //   student = {
+        //     ...student,
+        //     image: join(studentsImgDir, filename).toString(),
+        //   };
+        //   const newDB = db
+        //     .filter((entry !== entry.id) !== req.params.id)
+        //     .push(student);
+        //   writeDB(newDB, __dirname, "students.json");
+        res.status(201).send();
+      } else {
+        throw new Error("invalid student ID");
+      }
     } catch (error) {
       console.log(error);
       next(error);
