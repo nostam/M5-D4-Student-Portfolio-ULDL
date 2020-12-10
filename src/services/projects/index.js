@@ -1,23 +1,21 @@
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
 const uniqid = require("uniqid");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
-const services = require("../");
+const { writeDB, readDB } = require("../../lib");
 
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
-    const db = services.readDb(__dirname, "projects.json");
+    const db = await readDB(__dirname, "projects.json");
     res.send(db);
   } catch (error) {
     next(error);
   }
 });
 
-router.get("/:id", (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   try {
-    const db = services.readDb(__dirname, "projects.json");
+    const db = await readDB(__dirname, "projects.json");
     const entry = db.find((entry) => entry.id === req.params.id.toString());
     if (entry) {
       res.send(entry);
@@ -43,7 +41,7 @@ router.post(
     body("liveURL").isURL().withMessage("invalid url").exists(),
     body("studentId").isString().isAlphanumeric(),
   ],
-  (req, res, next) => {
+  async (req, res, next) => {
     try {
       const err = validationResult(req);
       if (!err.isEmpty()) {
@@ -53,16 +51,13 @@ router.post(
         // console.log(err.array());
         next(e);
       } else {
-        const db = services.readDb(__dirname, "projects.json");
+        const db = await readDB(__dirname, "projects.json");
         const newEntry = {
           ...req.body,
           id: uniqid(),
           creationDate: new Date(),
         };
-        const students = services.readDb(
-          __dirname,
-          "../students/students.json"
-        );
+        const students = await readDB(__dirname, "../students/students.json");
         const student = students.find(
           (student) => student.id === req.body.studentId
         );
@@ -75,11 +70,11 @@ router.post(
           student.numberOfProjects = 1;
         }
         db.push(newEntry);
-        services.writeDb(db, __dirname, "projects.json()");
+        await writeDB(db, __dirname, "projects.json()");
         students
           .filter((student) => student !== req.body.studentId)
           .push(student);
-        services.writeDb(students, __dirname, "../students/students.json");
+        await writeDB(students, __dirname, "../students/students.json");
         res.status(201).send({ id: newEntry.id });
       }
     } catch (error) {
@@ -88,11 +83,11 @@ router.post(
   }
 );
 
-router.delete("/:id", (req, res, next) => {
+router.delete("/:id", async (req, res, next) => {
   try {
-    const db = services.readDb(__dirname, "projects.json");
+    const db = await readDB(__dirname, "projects.json");
     const newDb = db.filter((entry) => entry.id !== req.params.id.toString());
-    services.writeDb(newDb, __dirname, "projects.json");
+    await writeDB(newDb, __dirname, "projects.json");
     res.status(204).send();
   } catch (error) {
     next(error);
@@ -126,7 +121,7 @@ router.put(
           (entry) => entry.id !== req.params.id.toString()
         );
         newDb.push(entry);
-        services.writeDb(newDb, __dirname, "projects.json");
+        writeDB(newDb, __dirname, "projects.json");
         res.send(newDb);
       }
     } catch (error) {
