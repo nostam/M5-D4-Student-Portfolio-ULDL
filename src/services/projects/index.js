@@ -4,30 +4,18 @@ const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const { writeDB, readDB } = require("../../lib");
 
-<<<<<<< HEAD
 router.get("/", async (req, res, next) => {
   try {
     const db = await readDB(__dirname, "projects.json");
-=======
-router.get("/", (req, res, next) => {
-  try {
-    const db = services.readDb(__dirname, "projects.json");
->>>>>>> a2f5852bdb80f3b51f7e8b25260c6106ae11e547
     res.send(db);
   } catch (error) {
     next(error);
   }
 });
 
-<<<<<<< HEAD
 router.get("/:id", async (req, res, next) => {
   try {
     const db = await readDB(__dirname, "projects.json");
-=======
-router.get("/:id", (req, res, next) => {
-  try {
-    const db = services.readDb(__dirname, "projects.json");
->>>>>>> a2f5852bdb80f3b51f7e8b25260c6106ae11e547
     const entry = db.find((entry) => entry.id === req.params.id.toString());
     if (entry) {
       res.send(entry);
@@ -39,7 +27,6 @@ router.get("/:id", (req, res, next) => {
   } catch (error) {
     next(error);
   }
-<<<<<<< HEAD
 });
 
 router.get("/:id/reviews", async (req, res, next) => {
@@ -58,8 +45,6 @@ router.get("/:id/reviews", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-=======
->>>>>>> a2f5852bdb80f3b51f7e8b25260c6106ae11e547
 });
 
 router.post(
@@ -169,10 +154,7 @@ router.post(
         res.status(201).send({ id: newEntry.id });
       }
     } catch (error) {
-<<<<<<< HEAD
       console.log(error);
-=======
->>>>>>> a2f5852bdb80f3b51f7e8b25260c6106ae11e547
       next(error);
     }
   }
@@ -197,16 +179,10 @@ router.put(
       .isLength({ min: 2 })
       .withMessage("repo name is too short")
       .exists(),
-<<<<<<< HEAD
     body("description").isString().isAlphanumeric(),
     body("repoUrl").isURL().withMessage("invalid url").exists(),
     body("liveUrl").isURL().withMessage("invalid url").exists(),
     body("studentID").isString().isAlphanumeric(),
-=======
-    body("repoURL").isURL().withMessage("invalid url").exists(),
-    body("liveURL").isURL().withMessage("invalid url").exists(),
-    body("studentId").isString().isAlphanumeric(),
->>>>>>> a2f5852bdb80f3b51f7e8b25260c6106ae11e547
   ],
   (req, res, next) => {
     try {
