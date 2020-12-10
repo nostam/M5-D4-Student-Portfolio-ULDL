@@ -176,13 +176,14 @@ router.post(
       const filenameArr = req.file.originalname.split(".");
       const filename =
         req.params.id + "." + filenameArr[filenameArr.length - 1];
-      await writeFile(join(projectsImgDir, filename), req.file.buffer);
+
       const db = await readDB(__dirname, "projects.json");
       const project = db.find((entry) => (entry.id = req.params.id));
       const src = new URL(
         `https://${req.get("host")}/public/img/projects/${filename}`
       ).href;
       if (Object.keys(project).length > 0) {
+        await writeFile(join(projectsImgDir, filename), req.file.buffer);
         const newEntry = {
           ...project,
           image: src,
@@ -192,7 +193,10 @@ router.post(
         writeDB(newDB, __dirname, "projects.json");
         res.status(201).send();
       } else {
-        throw new Error("invalid project ID");
+        const err = new Error();
+        err.message = "invalid ID";
+        err.httpStatusCode = 404;
+        next(err);
       }
     } catch (error) {
       console.log(error);

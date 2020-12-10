@@ -101,13 +101,13 @@ router.post(
       const filenameArr = req.file.originalname.split(".");
       const filename =
         req.params.id + "." + filenameArr[filenameArr.length - 1];
-      await writeFile(join(studentsImgDir, filename), req.file.buffer);
       const db = await readDB(__dirname, "students.json");
       const student = db.find((entry) => entry.id === req.params.id);
       const src = new URL(
         `https://${req.get("host")}/public/img/students/${filename}`
       ).href;
       if (Object.keys(student).length > 0) {
+        await writeFile(join(studentsImgDir, filename), req.file.buffer);
         const newEntry = {
           ...student,
           image: src,
@@ -117,7 +117,10 @@ router.post(
         await writeDB(newDB, __dirname, "students.json");
         res.status(201).send();
       } else {
-        throw new Error("invalid student ID");
+        const err = new Error();
+        err.message = "invalid ID";
+        err.httpStatusCode = 404;
+        next(err);
       }
     } catch (error) {
       console.log(error);
