@@ -7,14 +7,28 @@ const { body, validationResult } = require("express-validator");
 const services = require("../");
 
 router.get("/", (req, res, next) => {
-  const db = services.readDb(__dirname, "projects.json");
-  res.send(db);
+  try {
+    const db = services.readDb(__dirname, "projects.json");
+    res.send(db);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.get("/:id", (req, res, next) => {
-  const db = services.readDb(__dirname, "projects.json");
-  const entry = db.find((entry) => entry.id === req.params.id.toString());
-  entry ? res.send(entry) : res.status(404).send();
+  try {
+    const db = services.readDb(__dirname, "projects.json");
+    const entry = db.find((entry) => entry.id === req.params.id.toString());
+    if (entry) {
+      res.send(entry);
+    } else {
+      const error = new Error();
+      error.httpStatusCode = 404;
+      next(error);
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post(
@@ -69,8 +83,7 @@ router.post(
         res.status(201).send({ id: newEntry.id });
       }
     } catch (error) {
-      console.log("err by catch");
-      next(e);
+      next(error);
     }
   }
 );
@@ -92,10 +105,10 @@ router.put(
     body("name")
       .isString()
       .isLength({ min: 2 })
-      .withMessage("repo name too short")
-      .exists()
-      .withMessage("give repo a name"),
+      .withMessage("repo name is too short")
+      .exists(),
     body("repoURL").isURL().withMessage("invalid url").exists(),
+    body("liveURL").isURL().withMessage("invalid url").exists(),
     body("studentId").isString().isAlphanumeric(),
   ],
   (req, res, next) => {
