@@ -179,7 +179,9 @@ router.post(
       await writeFile(join(projectsImgDir, filename), req.file.buffer);
       const db = await readDB(__dirname, "projects.json");
       const project = db.find((entry) => (entry.id = req.params.id));
-      const src = join(req.get("host"), "./public/img/projects/", filename);
+      const src = new URL(
+        `https://${req.get("host")}/public/img/projects/${filename}`
+      ).href;
       if (Object.keys(project).length > 0) {
         const newEntry = {
           ...project,

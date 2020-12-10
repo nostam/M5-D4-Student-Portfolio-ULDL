@@ -22,7 +22,7 @@ server.use(cors());
 server.use(express.json());
 server.use(loggerMiddleware);
 
-server.use(express.static(join(__dirname, "../public")));
+server.use("/public", express.static(join(__dirname, "../public")));
 server.use("/students", students);
 server.use("/projects", projects);
 server.use("/problems", problems);
