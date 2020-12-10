@@ -179,14 +179,14 @@ router.post(
       await writeFile(join(projectsImgDir, filename), req.file.buffer);
       const db = await readDB(__dirname, "projects.json");
       const project = db.find((entry) => (entry.id = req.params.id));
+      const src = join(req.hostname, "./public/img/projects/", filename);
       if (Object.keys(project).length > 0) {
-        project = {
-          ...project,
-          image: join(projectsImgDir, filename).toString(),
+        const newEntry = {
+          ...student,
+          image: src,
         };
-        const newDB = db
-          .filter((entry !== entry.id) !== req.params.id)
-          .push(project);
+        const newDB = db.filter((entry !== entry.id) !== req.params.id);
+        newDB.push(newEntry);
         writeDB(newDB, __dirname, "students.json");
         res.status(201).send();
       } else {

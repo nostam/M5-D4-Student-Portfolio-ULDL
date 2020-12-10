@@ -103,17 +103,16 @@ router.post(
         req.params.id + "." + filenameArr[filenameArr.length - 1];
       await writeFile(join(studentsImgDir, filename), req.file.buffer);
       const db = await readDB(__dirname, "students.json");
-      const student = db.find((entry) => (entry.id = req.params.id));
-      // console.log(express.static(__dirname, filename));
+      const student = db.find((entry) => entry.id === req.params.id);
+      const src = join(req.hostname, "./public/img/students/", filename);
       if (Object.keys(student).length > 0) {
-        //   student = {
-        //     ...student,
-        //     image: join(studentsImgDir, filename).toString(),
-        //   };
-        //   const newDB = db
-        //     .filter((entry !== entry.id) !== req.params.id)
-        //     .push(student);
-        //   writeDB(newDB, __dirname, "students.json");
+        const newEntry = {
+          ...student,
+          image: src,
+        };
+        const newDB = db.filter((entry) => entry.id !== req.params.id);
+        newDB.push(newEntry);
+        await writeDB(newDB, __dirname, "students.json");
         res.status(201).send();
       } else {
         throw new Error("invalid student ID");
