@@ -187,7 +187,7 @@ router.post(
         };
         const newDB = db.filter((entry !== entry.id) !== req.params.id);
         newDB.push(newEntry);
-        writeDB(newDB, __dirname, "students.json");
+        writeDB(newDB, __dirname, "projects.json");
         res.status(201).send();
       } else {
         throw new Error("invalid project ID");
