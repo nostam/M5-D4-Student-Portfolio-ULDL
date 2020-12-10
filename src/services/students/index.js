@@ -104,7 +104,7 @@ router.post(
       await writeFile(join(studentsImgDir, filename), req.file.buffer);
       const db = await readDB(__dirname, "students.json");
       const student = db.find((entry) => entry.id === req.params.id);
-      const src = join(req.hostname, "./public/img/students/", filename);
+      const src = join(req.get("host"), "./public/img/students/", filename);
       if (Object.keys(student).length > 0) {
         const newEntry = {
           ...student,

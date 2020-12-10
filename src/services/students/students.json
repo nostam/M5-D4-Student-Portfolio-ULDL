@@ -13,6 +13,7 @@
     "id": "s123",
     "email": "brucelee@strive.school",
     "dateOfBirth": "1940-11-27",
-    "numberOfProjects": 1
+    "numberOfProjects": 1,
+    "image": "localhost\\public\\img\\students\\s123.jpg"
   }
 ]
