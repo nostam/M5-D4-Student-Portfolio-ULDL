@@ -29,6 +29,24 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+router.get("/:id/reviews", async (req, res, next) => {
+  try {
+    const db = await readDB(__dirname, "reviews.json");
+    const entry = db.find(
+      (entry) => entry.projectID === req.params.id.toString()
+    );
+    if (entry) {
+      res.send(entry);
+    } else {
+      const error = new Error();
+      error.httpStatusCode = 404;
+      next(error);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post(
   "/",
   [
@@ -37,9 +55,10 @@ router.post(
       .isLength({ min: 2 })
       .withMessage("repo name is too short")
       .exists(),
-    body("repoURL").isURL().withMessage("invalid url").exists(),
-    body("liveURL").isURL().withMessage("invalid url").exists(),
-    body("studentId").isString().isAlphanumeric(),
+    body("description").isString().isAlphanumeric(),
+    body("repoUrl").isURL().withMessage("invalid url").exists(),
+    body("liveUrl").isURL().withMessage("invalid url").exists(),
+    body("studentID").isString().isAlphanumeric(),
   ],
   async (req, res, next) => {
     try {
@@ -54,12 +73,12 @@ router.post(
         const db = await readDB(__dirname, "projects.json");
         const newEntry = {
           ...req.body,
-          id: uniqid(),
+          id: uniqid("p"),
           creationDate: new Date(),
         };
         const students = await readDB(__dirname, "../students/students.json");
         const student = students.find(
-          (student) => student.id === req.body.studentId
+          (student) => student.id === req.body.studentID
         );
         if (
           Object.keys(student).length > 0 &&
@@ -70,14 +89,72 @@ router.post(
           student.numberOfProjects = 1;
         }
         db.push(newEntry);
-        await writeDB(db, __dirname, "projects.json()");
+        await writeDB(db, __dirname, "projects.json");
         students
-          .filter((student) => student !== req.body.studentId)
+          .filter((student) => student.id !== req.body.studentID)
           .push(student);
         await writeDB(students, __dirname, "../students/students.json");
         res.status(201).send({ id: newEntry.id });
       }
     } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+);
+
+router.post(
+  "/:id/reviews/",
+  [
+    body("projectID")
+      .isString()
+      .isAlphanumeric()
+      .withMessage("invalid project ID")
+      .exists(),
+    body("name")
+      .isString()
+      .isLength({ min: 2 })
+      .withMessage("reviewer name is too short")
+      .exists(),
+    body("text").isString().exists(),
+  ],
+  async (req, res, next) => {
+    try {
+      const err = validationResult(req);
+      if (!err.isEmpty()) {
+        const e = new Error();
+        e.message = err;
+        e.httpStatusCode = 400;
+        console.log(e);
+        next(e);
+      } else {
+        const db = await readDB(__dirname, "reviews.json");
+        const newEntry = {
+          ...req.body,
+          id: uniqid("r"),
+          date: new Date(),
+        };
+        db.push(newEntry);
+        await writeDB(db, __dirname, "reviews.json");
+
+        // const projects = await readDB(__dirname, "projects.json");
+        // const proj = projects.find((project) => project.id === req.params.id);
+        // if (
+        //   Object.keys(proj).length > 0 &&
+        //   proj.hasOwnProperty("numberOfReviews")
+        // ) {
+        //   proj.numberOfReviews++;
+        // } else {
+        //   proj.numberOfReviews = 1;
+        // }
+        // projects
+        //   .filter((project) => project.id !== req.params.id)
+        //   .push(project);
+        // await writeDB(projects, __dirname, "projects.json");
+        res.status(201).send({ id: newEntry.id });
+      }
+    } catch (error) {
+      console.log(error);
       next(error);
     }
   }
@@ -102,9 +179,10 @@ router.put(
       .isLength({ min: 2 })
       .withMessage("repo name is too short")
       .exists(),
-    body("repoURL").isURL().withMessage("invalid url").exists(),
-    body("liveURL").isURL().withMessage("invalid url").exists(),
-    body("studentId").isString().isAlphanumeric(),
+    body("description").isString().isAlphanumeric(),
+    body("repoUrl").isURL().withMessage("invalid url").exists(),
+    body("liveUrl").isURL().withMessage("invalid url").exists(),
+    body("studentID").isString().isAlphanumeric(),
   ],
   (req, res, next) => {
     try {

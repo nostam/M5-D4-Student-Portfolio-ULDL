@@ -2,8 +2,17 @@
   {
     "name": "Bruce",
     "surname": "Lee",
-    "id": "123",
+    "id": "s123",
     "email": "brucelee@strive.school",
-    "dateOfBirth": "1940-11-27"
+    "dateOfBirth": "1940-11-27",
+    "numberOfProjects": 1
+  },
+  {
+    "name": "Batman",
+    "surname": "fake",
+    "email": "fakebatman@gmail.com",
+    "dateOfBirth": "2000-01-01",
+    "id": "s4mnlchokiiy5wjk",
+    "numberOfProjects": 1
   }
 ]

@@ -73,7 +73,7 @@ router.post(
         } else if (chkEmail) {
           res.status(422).send(); // or 409? 303?
         } else {
-          const newEntry = { ...req.body, id: uniqid() };
+          const newEntry = { ...req.body, id: uniqid("s") };
           db.push(newEntry);
           await writeDB(db, __dirname, "students.json");
           res.status(201).send({ id: newEntry.id });

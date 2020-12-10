@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "name": "M5-D3-repo",
+    "description": "middlewares",
+    "repoUrl": "http://github.com/brucelee/m5-d/",
+    "liveUrl": "http://brucelee.github.io",
+    "studentID": "s123",
+    "id": "p4mnlkzokiixc8td",
+    "creationDate": "2020-12-10T14:15:53.760Z"
+  },
+  {
+    "name": "M5-D1-repo",
+    "description": "backend",
+    "repoUrl": "http://github.com/fakebatman/m5-d1/",
+    "liveUrl": "http://fakebatman.github.io",
+    "studentID": "s4mnlchokiiy5wjk",
+    "id": "p4mnlj2wkiiy70hp",
+    "creationDate": "2020-12-10T14:39:49.308Z"
+  }
+]
