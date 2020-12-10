@@ -182,7 +182,7 @@ router.post(
       const src = join(req.hostname, "./public/img/projects/", filename);
       if (Object.keys(project).length > 0) {
         const newEntry = {
-          ...student,
+          ...project,
           image: src,
         };
         const newDB = db.filter((entry !== entry.id) !== req.params.id);
